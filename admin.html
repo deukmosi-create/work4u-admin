@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work4U Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0077b6;
+            --primary-dark: #005f8f;
+            --secondary: #90e0ef;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 16px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        .dark-mode {
+            --light: #1a1a2e;
+            --dark: #f8f9fa;
+            --gray: #adb5bd;
+            --light-gray: #3a3a5a;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+        /* Login Page */
+        .login-container {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, #0096c7 100%);
+        }
+        .login-card {
+            background: var(--light);
+            padding: 50px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        .login-logo {
+            margin-bottom: 30px;
+        }
+        .login-logo-img {
+            height: 80px;
+            width: auto;
+            margin: 0 auto;
+        }
+        .login-form .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .login-form input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+        }
+        .login-btn {
+            background: var(--primary);
+            color: var(--light);
+            padding: 14px 32px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 10px;
+        }
+        .login-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 119, 182, 0.3);
+        }
+        /* Dashboard Layout */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+        /* Top Navigation Bar */
+        .top-navbar {
+            background: var(--light);
+            padding: 0 30px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo-img {
+            height: 40px;
+            width: auto;
+        }
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+            margin: 0 30px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid var(--light-gray);
+            border-radius: 30px;
+            font-size: 1rem;
+            background: var(--light);
+            color: var(--dark);
+            transition: var(--transition);
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            color: var(--dark);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .dark-mode-toggle:hover {
+            color: var(--primary);
+        }
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .profile-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .profile-dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: var(--light);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 200px;
+            z-index: 1001;
+            display: none;
+        }
+        .profile-dropdown-menu.show {
+            display: block;
+        }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+            gap: 12px;
+        }
+        .dropdown-item:hover {
+            background: var(--light-gray);
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: var(--light-gray);
+            margin: 5px 0;
+        }
+        /* Dashboard Layout */
+        .dashboard-layout {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #10b981 0%, #005f8f 100%);
+            color: white;
+            height: 100%;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            padding: 30px 0;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            z-index: 999;
+            overflow-y: auto;
+        }
+        .sidebar.collapsed {
+            width: 80px;
+        }
+        .sidebar-header {
+            padding: 0 25px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .toggle-sidebar {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .toggle-sidebar:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .sidebar-menu {
+            list-style: none;
+        }
+        .sidebar-menu li {
+            margin-bottom: 8px;
+        }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            transition: var(--transition);
+            gap: 15px;
+        }
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-left: 3px solid white;
+        }
+        .sidebar-menu a i {
+            font-size: 1.2rem;
+            min-width: 24px;
+            text-align: center;
+        }
+        .sidebar.collapsed .sidebar-menu a span {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-menu a {
+            justify-content: center;
+            padding: 15px;
+        }
+        .sidebar.collapsed .sidebar-menu a i {
+            margin-right: 0;
+        }
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+            transition: var(--transition);
+        }
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 80px;
+        }
+        .page-content {
+            display: none;
+        }
+        .page-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: var(--light);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+        .card-total {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        .card-label {
+            font-size: 1rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        .card-1 .card-icon { background: linear-gradient(135deg, #0077b6 0%, #0096c7 100%); color: white; }
+        .card-2 .card-icon { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; }
+        .card-3 .card-icon { background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); color: white; }
+        .card-4 .card-icon { background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); color: white; }
+        /* Analytics Section */
+        .analytics-section {
+            background: var(--light);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .analytics-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .chart-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .chart-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+        /* Applications Table */
+        .applications-table-section {
+            background: var(--light);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .table-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        .applications-table {
+            width: 100%;
+            background: var(--light);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .applications-table thead {
+            background: var(--primary);
+            color: var(--white);
+        }
+        .applications-table th,
+        .applications-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        .applications-table th {
+            font-weight: 600;
+        }
+        .applications-table tbody tr:hover {
+            background: var(--light-bg);
+        }
+        .applications-table tbody tr.approved {
+            background: rgba(40, 167, 69, 0.1);
+        }
+        .applications-table tbody tr.rejected {
+            background: rgba(220, 53, 69, 0.1);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .approve-btn {
+            background: #28a745;
+            color: white;
+        }
+        .approve-btn:hover {
+            background: #218838;
+        }
+        .reject-btn {
+            background: #dc3545;
+            color: white;
+        }
+        .reject-btn:hover {
+            background: #c82333;
+        }
+        .view-btn {
+            background: var(--primary);
+            color: white;
+        }
+        .view-btn:hover {
+            background: var(--primary-dark);
+        }
+        /* Detail View */
+        .detail-view {
+            padding: 20px;
+            background: #e3f2fd;
+            border-top: 2px solid var(--primary);
+            display: none;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            color: var(--gray);
+        }
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        /* Settings Form */
+        .settings-form {
+            background: var(--light);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            max-width: 600px;
+        }
+        .settings-form .form-group {
+            margin-bottom: 20px;
+        }
+        .settings-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .settings-form input,
+        .settings-form select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        .settings-form input:focus,
+        .settings-form select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .save-btn {
+            background: var(--primary);
+            color: var(--white);
+            padding: 12px 30px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .save-btn:hover {
+            background: var(--primary-dark);
+        }
+        /* Profile Form */
+        .profile-form {
+            background: var(--light);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            max-width: 500px;
+        }
+        .profile-form .form-group {
+            margin-bottom: 20px;
+        }
+        .profile-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .profile-form input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            background: white;
+            color: var(--dark);
+        }
+        .profile-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        /* Messages */
+        .message {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: none;
+        }
+        .message.success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #155724;
+            border: 1px solid #28a745;
+            display: block;
+        }
+        .message.error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #721c24;
+            border: 1px solid #dc3545;
+            display: block;
+        }
+        .message.loading {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+            border: 1px solid #ffc107;
+            display: block;
+        }
+        /* Footer */
+        .dashboard-footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-content {
+                padding: 20px;
+            }
+            .summary-cards {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+            }
+            .sidebar.collapsed {
+                width: 70px;
+            }
+            .main-content {
+                margin-left: 250px;
+            }
+            .sidebar.collapsed ~ .main-content {
+                margin-left: 70px;
+            }
+            .search-container {
+                max-width: 300px;
+            }
+        }
+        @media (max-width: 768px) {
+            .top-navbar {
+                padding: 0 20px;
+            }
+            .search-container {
+                display: none;
+            }
+            .summary-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 220px;
+            }
+            .sidebar.collapsed {
+                width: 60px;
+            }
+            .main-content {
+                margin-left: 220px;
+            }
+            .sidebar.collapsed ~ .main-content {
+                margin-left: 60px;
+            }
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-container" id="loginPage">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="https://i.postimg.cc/h4NxtFNg/1547-1519205053-work4u02b.jpg" alt="Work4U Logo" class="login-logo-img">
+            </div>
+            <h2>Admin Login</h2>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="admin@work4u.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+            <div id="loginMessage" class="message"></div>
+        </div>
+    </div>
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <!-- Header -->
+        <header class="top-navbar">
+            <div class="navbar-left">
+                <a href="#" class="logo">
+                    <img src="https://i.postimg.cc/h4NxtFNg/1547-1519205053-work4u02b.jpg" alt="Work4U Logo" class="logo-img">
+                </a>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="globalSearch" placeholder="Search applications...">
+            </div>
+            <div class="navbar-right">
+                <button class="dark-mode-toggle" id="darkModeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <!-- Profile Dropdown -->
+                <div class="profile-dropdown" id="profileDropdown">
+                    <button class="profile-btn" id="profileBtn">
+                        <div class="profile-avatar">A</div>
+                        <span class="profile-name">Admin</span>
+                    </button>
+                    <div class="profile-dropdown-menu" id="profileDropdownMenu">
+                        <a href="#settings" class="dropdown-item" data-page="settings">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="dashboard-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <button class="toggle-sidebar" id="toggleSidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="#dashboard" class="active" data-page="dashboard"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+                    <li><a href="#applications" data-page="applications"><i class="fas fa-file-alt"></i> <span>Applications</span></a></li>
+                    <li><a href="#analytics" data-page="analytics"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+                </ul>
+            </aside>
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Dashboard Page -->
+                <div id="dashboardPage" class="page-content active">
+                    <h2 class="page-title">
+                        <i class="fas fa-home"></i> Dashboard
+                    </h2>
+                    <div class="summary-cards">
+                        <div class="card card-1">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <div class="card-total" id="totalApps">0</div>
+                                <div class="card-label">Total Applications</div>
+                            </div>
+                        </div>
+                        <div class="card card-2">
+                            <div class="card-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <div class="card-total" id="approvedApps">0</div>
+                                <div class="card-label">Approved</div>
+                            </div>
+                        </div>
+                        <div class="card card-3">
+                            <div class="card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <div class="card-total" id="pendingApps">0</div>
+                                <div class="card-label">Pending</div>
+                            </div>
+                        </div>
+                        <div class="card card-4">
+                            <div class="card-icon">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <div>
+                                <div class="card-total" id="rejectedApps">0</div>
+                                <div class="card-label">Rejected</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analytics-section">
+                        <div class="analytics-header">
+                            <h2 class="analytics-title">Analytics Overview</h2>
+                        </div>
+                        <div class="charts-container">
+                            <div class="chart-wrapper">
+                                <h3 class="chart-title">Application Status</h3>
+                                <div class="chart-container">
+                                    <canvas id="statusChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <h3 class="chart-title">Applications Over Time</h3>
+                                <div class="chart-container">
+                                    <canvas id="timeChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <h3 class="chart-title">Availability Distribution</h3>
+                                <div class="chart-container">
+                                    <canvas id="availabilityChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Applications Page -->
+                <div id="applicationsPage" class="page-content">
+                    <h2 class="page-title">
+                        <i class="fas fa-file-alt"></i> Applications
+                    </h2>
+                    <div class="applications-table-section">
+                        <div class="table-header">
+                            <h2 class="table-title">All Applications</h2>
+                        </div>
+                        <table class="applications-table" id="applicationsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Experience</th>
+                                    <th>Availability</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applicationsTableBody">
+                                <!-- Applications will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Analytics Page -->
+                <div id="analyticsPage" class="page-content">
+                    <h2 class="page-title">
+                        <i class="fas fa-chart-line"></i> Analytics
+                    </h2>
+                    <div class="analytics-section">
+                        <div class="analytics-header">
+                            <h2 class="analytics-title">Detailed Analytics</h2>
+                        </div>
+                        <div class="charts-container">
+                            <div class="chart-wrapper">
+                                <h3 class="chart-title">Approval Rate Over Time</h3>
+                                <div class="chart-container">
+                                    <canvas id="approvalChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <h3 class="chart-title">Language Distribution</h3>
+                                <div class="chart-container">
+                                    <canvas id="languageChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <h3 class="chart-title">Experience Level Breakdown</h3>
+                                <div class="chart-container">
+                                    <canvas id="experienceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Settings Page -->
+                <div id="settingsPage" class="page-content">
+                    <h2 class="page-title">
+                        <i class="fas fa-cog"></i> Settings
+                    </h2>
+                    <div class="settings-form">
+                        <div class="form-group">
+                            <label for="adminName">Full Name</label>
+                            <input type="text" id="adminName" name="adminName" value="Admin User">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminEmail">Email</label>
+                            <input type="email" id="adminEmail" name="adminEmail" value="admin@work4u.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" name="currentPassword" placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password">
+                        </div>
+                        <button type="submit" class="save-btn" id="saveSettingsBtn">Update Profile</button>
+                    </div>
+                    <div id="settingsMessage" class="message"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        let isAuthenticated = false;
+        let applicationsData = [];
+        const loginPage = document.getElementById('loginPage');
+        const dashboard = document.getElementById('dashboard');
+        const loginForm = document.getElementById('loginForm');
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        function initApp() {
+            checkAuthStatus();
+            setupEventListeners();
+            if (isAuthenticated) {
+                loadApplicationsFromBackend();
+                updateStats();
+                initCharts();
+            }
+        }
+
+        function checkAuthStatus() {
+            const storedAuth = localStorage.getItem('work4u_admin_auth');
+            isAuthenticated = storedAuth === 'true';
+            if (isAuthenticated) {
+                loginPage.style.display = 'none';
+                dashboard.style.display = 'block';
+            } else {
+                loginPage.style.display = 'flex';
+                dashboard.style.display = 'none';
+            }
+        }
+
+        function handleLogin(email, password) {
+            if (email === 'admin@work4u.com' && password === 'admin123') {
+                isAuthenticated = true;
+                localStorage.setItem('work4u_admin_auth', 'true');
+                loginPage.style.display = 'none';
+                dashboard.style.display = 'block';
+                showToast('Login successful!', 'success');
+                loadApplicationsFromBackend();
+                updateStats();
+                initCharts();
+            } else {
+                const messageDiv = document.getElementById('loginMessage');
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Invalid email or password';
+                messageDiv.style.display = 'block';
+            }
+        }
+
+        function handleLogout() {
+            isAuthenticated = false;
+            localStorage.removeItem('work4u_admin_auth');
+            dashboard.style.display = 'none';
+            loginPage.style.display = 'flex';
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginMessage').style.display = 'none';
+            showToast('Logged out successfully!', 'info');
+        }
+
+        function setupEventListeners() {
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                handleLogin(email, password);
+            });
+
+            logoutBtn.addEventListener('click', handleLogout);
+
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.sidebar-menu a').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active'));
+                    const pageId = this.getAttribute('data-page') + 'Page';
+                    document.getElementById(pageId).classList.add('active');
+                    if (this.getAttribute('data-page') === 'analytics') {
+                        setTimeout(initCharts, 100);
+                    }
+                });
+            });
+
+            toggleSidebar.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+            });
+
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const icon = darkModeToggle.querySelector('i');
+                icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
+                setTimeout(initCharts, 100);
+            });
+
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdownMenu.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!profileDropdown.contains(e.target)) {
+                    profileDropdownMenu.classList.remove('show');
+                }
+            });
+
+            document.querySelectorAll('.profile-dropdown-menu a').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    if (page) {
+                        document.querySelectorAll('.sidebar-menu a').forEach(l => l.classList.remove('active'));
+                        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+                        document.getElementById(page + 'Page').classList.add('active');
+                        profileDropdownMenu.classList.remove('show');
+                    } else if (this.id === 'logoutBtn') {
+                        handleLogout();
+                        profileDropdownMenu.classList.remove('show');
+                    }
+                });
+            });
+
+            document.getElementById('saveSettingsBtn')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                const messageDiv = document.getElementById('settingsMessage');
+                messageDiv.className = 'message success';
+                messageDiv.textContent = 'Profile updated successfully!';
+                messageDiv.style.display = 'block';
+                setTimeout(() => { messageDiv.style.display = 'none'; }, 3000);
+            });
+        }
+
+        async function loadApplicationsFromBackend() {
+            const tableBody = document.getElementById('applicationsTableBody');
+            try {
+                const response = await fetch('/applications'); // ✅ FIXED: relative path
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                applicationsData = await response.json();
+                tableBody.innerHTML = '';
+                if (applicationsData.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">No applications found</td></tr>';
+                    updateStats();
+                    return;
+                }
+                applicationsData.forEach(app => {
+                    const row = document.createElement('tr');
+                    const status = app.status || 'pending';
+                    row.className = status;
+                    const date = new Date(app.created_at);
+                    const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    let statusBadge = '';
+                    if (status === 'pending') {
+                        statusBadge = '<span class="status-badge status-pending">Pending</span>';
+                    } else if (status === 'approved') {
+                        statusBadge = '<span class="status-badge status-approved">Approved</span>';
+                    } else if (status === 'rejected') {
+                        statusBadge = '<span class="status-badge status-rejected">Rejected</span>';
+                    }
+                    row.innerHTML = `
+                        <td>${app.id}</td>
+                        <td>${app.first_name} ${app.last_name}</td>
+                        <td>${app.email}</td>
+                        <td>${app.experience_level}</td>
+                        <td>${app.availability}</td>
+                        <td>${statusBadge}</td>
+                        <td>${formattedDate}</td>
+                        <td>
+                            <div class="action-buttons">
+                                ${status === 'pending' ? `
+                                <button class="action-btn approve-btn" onclick="approveApplication(${app.id})">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="action-btn reject-btn" onclick="rejectApplication(${app.id})">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                                ` : ''}
+                                <button class="action-btn view-btn" onclick="viewApplication(${app.id})">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                    const detailRow = document.createElement('tr');
+                    detailRow.className = 'detail-view';
+                    detailRow.id = `detail-${app.id}`;
+                    detailRow.style.display = 'none';
+                    detailRow.innerHTML = `
+                        <td colspan="8">
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <div class="detail-label">First Name</div>
+                                    <div class="detail-value">${app.first_name}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Last Name</div>
+                                    <div class="detail-value">${app.last_name}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Email</div>
+                                    <div class="detail-value">${app.email}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Experience</div>
+                                    <div class="detail-value">${app.experience_level}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Language</div>
+                                    <div class="detail-value">${app.language}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Availability</div>
+                                    <div class="detail-value">${app.availability}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Motivation</div>
+                                    <div class="detail-value">${app.motivation || 'Not provided'}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Status</div>
+                                    <div class="detail-value">${statusBadge}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Submitted</div>
+                                    <div class="detail-value">${formattedDate}</div>
+                                </div>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(detailRow);
+                });
+                updateStats();
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                const messageDiv = document.createElement('div');
+                messageDiv.id = 'applicationsMessage';
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Failed to load applications. Please make sure your backend is running.';
+                messageDiv.style.display = 'block';
+                document.querySelector('.applications-table-section').prepend(messageDiv);
+            }
+        }
+
+        function viewApplication(appId) {
+            const detailRow = document.getElementById(`detail-${appId}`);
+            const row = detailRow.previousElementSibling;
+            if (detailRow.style.display === 'none') {
+                detailRow.style.display = 'table-row';
+                row.classList.add('expanded');
+            } else {
+                detailRow.style.display = 'none';
+                row.classList.remove('expanded');
+            }
+        }
+
+        async function approveApplication(appId) {
+            const messageDiv = document.getElementById('applicationsMessage') || document.createElement('div');
+            if (!document.getElementById('applicationsMessage')) {
+                messageDiv.id = 'applicationsMessage';
+                document.querySelector('.applications-table-section').prepend(messageDiv);
+            }
+            messageDiv.className = 'message loading';
+            messageDiv.textContent = 'Sending approval email and updating status...';
+            messageDiv.style.display = 'block';
+
+            try {
+                const response = await fetch(`/applications/${appId}/approve`, { // ✅ FIXED
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    messageDiv.className = 'message success';
+                    messageDiv.innerHTML = 'Application approved and approval email sent successfully!';
+                    loadApplicationsFromBackend();
+                } else {
+                    throw new Error(result.message || 'Approval failed');
+                }
+            } catch (error) {
+                console.error('Error approving application:', error);
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Failed to approve application. Please try again.';
+            }
+        }
+
+        async function rejectApplication(appId) {
+            const messageDiv = document.getElementById('applicationsMessage') || document.createElement('div');
+            if (!document.getElementById('applicationsMessage')) {
+                messageDiv.id = 'applicationsMessage';
+                document.querySelector('.applications-table-section').prepend(messageDiv);
+            }
+            messageDiv.className = 'message loading';
+            messageDiv.textContent = 'Sending rejection email and updating status...';
+            messageDiv.style.display = 'block';
+
+            try {
+                const response = await fetch(`/applications/${appId}/reject`, { // ✅ FIXED
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    messageDiv.className = 'message success';
+                    messageDiv.innerHTML = 'Application rejected and rejection email sent successfully!';
+                    loadApplicationsFromBackend();
+                } else {
+                    throw new Error(result.message || 'Rejection failed');
+                }
+            } catch (error) {
+                console.error('Error rejecting application:', error);
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Failed to reject application. Please try again.';
+            }
+        }
+
+        function updateStats() {
+            const total = applicationsData.length;
+            const approved = applicationsData.filter(app => app.status === 'approved').length;
+            const pending = applicationsData.filter(app => app.status === 'pending' || !app.status).length;
+            const rejected = applicationsData.filter(app => app.status === 'rejected').length;
+            document.getElementById('totalApps').textContent = total;
+            document.getElementById('approvedApps').textContent = approved;
+            document.getElementById('pendingApps').textContent = pending;
+            document.getElementById('rejectedApps').textContent = rejected;
+        }
+
+        function initCharts() {
+            if (window._statusChart) try { window._statusChart.destroy(); } catch(e) {}
+            if (window._timeChart) try { window._timeChart.destroy(); } catch(e) {}
+            if (window._availabilityChart) try { window._availabilityChart.destroy(); } catch(e) {}
+            if (window._approvalChart) try { window._approvalChart.destroy(); } catch(e) {}
+            if (window._languageChart) try { window._languageChart.destroy(); } catch(e) {}
+            if (window._experienceChart) try { window._experienceChart.destroy(); } catch(e) {}
+
+            const statusCtx = document.getElementById('statusChart')?.getContext('2d');
+            if (statusCtx) {
+                window._statusChart = new Chart(statusCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Approved', 'Pending', 'Rejected'],
+                        datasets: [{
+                            data: [
+                                applicationsData.filter(a => a.status === 'approved').length,
+                                applicationsData.filter(a => a.status === 'pending').length,
+                                applicationsData.filter(a => a.status === 'rejected').length
+                            ],
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(255, 193, 7, 0.8)',
+                                'rgba(220, 53, 69, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(40, 167, 69, 1)',
+                                'rgba(255, 193, 7, 1)',
+                                'rgba(220, 53, 69, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--dark').trim()
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const timeCtx = document.getElementById('timeChart')?.getContext('2d');
+            if (timeCtx) {
+                window._timeChart = new Chart(timeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan 10', 'Jan 12', 'Jan 14', 'Jan 16', 'Jan 18', 'Jan 20'],
+                        datasets: [{
+                            label: 'Applications',
+                            data: [2, 3, 1, 4, 2, 5],
+                            borderColor: 'rgba(0, 119, 182, 1)',
+                            backgroundColor: 'rgba(0, 119, 182, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                                ticks: { color: getComputedStyle(document.body).getPropertyValue('--dark').trim() }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: getComputedStyle(document.body).getPropertyValue('--dark').trim() }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const availabilityCtx = document.getElementById('availabilityChart')?.getContext('2d');
+            if (availabilityCtx) {
+                const dayCount = applicationsData.filter(a => a.availability === 'Day').length;
+                const nightCount = applicationsData.filter(a => a.availability === 'Night').length;
+                const bothCount = applicationsData.filter(a => a.availability === 'Both').length;
+                window._availabilityChart = new Chart(availabilityCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Day', 'Night', 'Both'],
+                        datasets: [{
+                            label: 'Availability',
+                            data: [dayCount, nightCount, bothCount],
+                            backgroundColor: [
+                                'rgba(0, 119, 182, 0.8)',
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(255, 193, 7, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(0, 119, 182, 1)',
+                                'rgba(40, 167, 69, 1)',
+                                'rgba(255, 193, 7, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                                ticks: { color: getComputedStyle(document.body).getPropertyValue('--dark').trim() }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: getComputedStyle(document.body).getPropertyValue('--dark').trim() }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (document.getElementById('analyticsPage')?.classList.contains('active')) {
+                initAnalyticsCharts();
+            }
+        }
+
+        function initAnalyticsCharts() {
+            const approvalCtx = document.getElementById('approvalChart')?.getContext('2d');
+            if (approvalCtx) {
+                window._approvalChart = new Chart(approvalCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [{
+                            label: 'Approval Rate (%)',
+                            data: [65, 72, 80, 75],
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                                ticks: { color: getComputedStyle(document.body).getPropertyValue('--dark').trim() }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: getComputedStyle(document.body).getPropertyValue('--dark').trim() }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const languageCtx = document.getElementById('languageChart')?.getContext('2d');
+            if (languageCtx) {
+                window._languageChart = new Chart(languageCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['English', 'Spanish', 'French', 'Other'],
+                        datasets: [{
+                            data: [60, 20, 10, 10],
+                            backgroundColor: [
+                                'rgba(0, 119, 182, 0.8)',
+                                'rgba(255, 193, 7, 0.8)',
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(108, 117, 125, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(0, 119, 182, 1)',
+                                'rgba(255, 193, 7, 1)',
+                                'rgba(40, 167, 69, 1)',
+                                'rgba(108, 117, 125, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--dark').trim()
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const experienceCtx = document.getElementById('experienceChart')?.getContext('2d');
+            if (experienceCtx) {
+                window._experienceChart = new Chart(experienceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Yes', 'No'],
+                        datasets: [{
+                            data: [70, 30],
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(220, 53, 69, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(40, 167, 69, 1)',
+                                'rgba(220, 53, 69, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: getComputedStyle(document.body).getPropertyValue('--dark').trim()
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.5s ease forwards';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+        window.approveApplication = approveApplication;
+        window.rejectApplication = rejectApplication;
+        window.viewApplication = viewApplication;
+    </script>
+</body>
+</html>
